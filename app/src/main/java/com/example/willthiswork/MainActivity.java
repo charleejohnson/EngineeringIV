@@ -52,8 +52,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     ImageButton imageButton;
     Camera camera;
     android.hardware.Camera.Parameters parameters;
-    boolean isflash=false;
-    boolean ison=false;
+    boolean isFlashOn=false; //all variables are for camera flash toggle
 
 
     private BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
@@ -72,7 +71,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 } break;
             }
         }
-    };
+    }; // this is for the color blob detection code
 
     public MainActivity() {
         Log.i(TAG, "Instantiated new " + this.getClass());
@@ -84,62 +83,54 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         inflater.inflate(R.menu.example_menu, menu);
         return true;
 
-    }
+    } //menu inflater for title
 
-    /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "called onCreate");
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); // color blob code
 
-        setContentView(R.layout.main_activity);
+        setContentView(R.layout.main_activity); // color blob code
 
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.color_blob_detection_activity_surface_view);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
-        mOpenCvCameraView.setCvCameraViewListener(this);
+        mOpenCvCameraView.setCvCameraViewListener(this); // color blob code
 
-        imageButton=(ImageButton)findViewById(R.id.imageButton);
+        imageButton=(ImageButton)findViewById(R.id.imageButton); // flash toggle button
         if(getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)){
 
             camera=android.hardware.Camera.open();
             parameters=camera.getParameters();
-            isflash=true;
+            isFlashOn=true; // flash toggle button
 
         }
         imageButton.setOnClickListener(new View.OnClickListener(){
             @Override
-            public void onClick(View view) {
+            public void onClick(View view) { // flash toggle button
 
-                if (isflash) {
-
-                    if (!ison) {
+                if (isFlashOn) {
 
                         imageButton.setImageResource(R.drawable.on);
                         parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
                         camera.setParameters(parameters);
                         camera.startPreview();
-                        ison=true;
 
-                    }
+                }
 
-                    else {
+                else if (isFlashOn){
 
-                        imageButton.setImageResource(R.drawable.off);
-                        parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-                        camera.setParameters(parameters);
-                        Camera.stopPreview();
-                        ison=false;
-
-                    }
-
+                    imageButton.setImageResource(R.drawable.off);
+                    parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                    camera.setParameters(parameters);
+                    camera.stopPreview();
 
                 }
 
                 else {
 
-                    AlertDialog.Builder builder = new AlertDialog().Builder(MainActivity.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                     builder.setTitle("Error...");
                     builder.setMessage("Flash Light is not Available on this device.");
                     builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -162,7 +153,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
     }
 
-    @Override
+    /*@Override
     protected void onStop ()
     {
         super.onStop();
@@ -172,14 +163,14 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             camera=null;
 
         }
-    }
+    } // flash camera toggle ends */
 
     @Override
     public void onPause()
     {
         super.onPause();
         if (mOpenCvCameraView != null)
-            mOpenCvCameraView.disableView();
+            mOpenCvCameraView.disableView(); // color blob detection
     }
 
     @Override
@@ -191,14 +182,14 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this, mLoaderCallback);
         } else {
             Log.d(TAG, "OpenCV library found inside package. Using it!");
-            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS); // color blob detection
         }
     }
 
     public void onDestroy() {
         super.onDestroy();
         if (mOpenCvCameraView != null)
-            mOpenCvCameraView.disableView();
+            mOpenCvCameraView.disableView(); // color blob detection
     }
 
     public void onCameraViewStarted(int width, int height) {
@@ -208,14 +199,14 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         mBlobColorRgba = new Scalar(255);
         mBlobColorHsv = new Scalar(255);
         SPECTRUM_SIZE = new Size(200, 64);
-        CONTOUR_COLOR = new Scalar(255,0,0,255);
+        CONTOUR_COLOR = new Scalar(255,0,0,255); // color blob detection
     }
 
     public void onCameraViewStopped() {
         mRgba.release();
-    }
+    } // color blob detection
 
-    public boolean onTouch(View v, MotionEvent event) {
+    public boolean onTouch(View v, MotionEvent event) { // color blob detection
         int cols = mRgba.cols();
         int rows = mRgba.rows();
 
@@ -265,7 +256,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         return false; // don't need subsequent touch events
     }
 
-    public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
+    public Mat onCameraFrame(CvCameraViewFrame inputFrame) { // color blob detection
         mRgba = inputFrame.rgba();
 
         if (mIsColorSelected) {
@@ -284,7 +275,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         return mRgba;
     }
 
-    private Scalar converScalarHsv2Rgba(Scalar hsvColor) {
+    private Scalar converScalarHsv2Rgba(Scalar hsvColor) { // color blob detection
         Mat pointMatRgba = new Mat();
         Mat pointMatHsv = new Mat(1, 1, CvType.CV_8UC3, hsvColor);
         Imgproc.cvtColor(pointMatHsv, pointMatRgba, Imgproc.COLOR_HSV2RGB_FULL, 4);

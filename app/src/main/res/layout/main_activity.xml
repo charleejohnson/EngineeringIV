@@ -20,15 +20,16 @@
         android:layout_marginTop="20dp"
         android:background="@android:color/background_dark"
         android:textColor="@color/colorPrimary"
-        />
+        /> <!-- this is the title for the app -->
 
         <org.opencv.android.JavaCameraView
             android:id="@+id/color_blob_detection_activity_surface_view"
+            android:rotation="90"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="11"
             android:padding = "1dp"
-            />
+            /> <!-- this is the color detection screen -->
 
         <ImageButton
             android:id="@+id/imageButton"
@@ -40,7 +41,7 @@
             android:layout_centerHorizontal="true"
             android:contentDescription="off"
             android:padding = "1dp"
-            /> <!-- eventually this will toggle camera flash -->
+            /> <!-- this toggles camera flash -->
 
 
     </LinearLayout>

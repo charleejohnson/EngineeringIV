@@ -52,7 +52,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     ImageButton imageButton;
     Camera camera;
     android.hardware.Camera.Parameters parameters;
-    boolean isFlashOn=false; //all variables are for camera flash toggle
+    boolean isFlashOn= false; //all variables are for camera flash toggle
 
 
     private BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
@@ -103,14 +103,14 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
             camera=android.hardware.Camera.open();
             parameters=camera.getParameters();
-            isFlashOn=true; // flash toggle button
+            isFlashOn=false; // flash toggle button
 
         }
         imageButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) { // flash toggle button
 
-                if (isFlashOn) {
+                if (isFlashOn == true) {
 
                         imageButton.setImageResource(R.drawable.on);
                         parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
@@ -136,9 +136,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            Dialog dialog = null;
-                            dialog.dismiss();
-                            finish();
+                        dialogInterface.dismiss();
                         }
                     });
                     AlertDialog alertDialog=builder.create();
@@ -153,7 +151,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
     }
 
-    /*@Override
+    @Override
     protected void onStop ()
     {
         super.onStop();
@@ -163,7 +161,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             camera=null;
 
         }
-    } // flash camera toggle ends */
+    } // flash camera toggle ends
 
     @Override
     public void onPause()

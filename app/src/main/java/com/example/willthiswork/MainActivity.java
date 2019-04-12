@@ -2,11 +2,15 @@ package com.example.willthiswork;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,10 +39,13 @@ import org.opencv.imgproc.Imgproc;
 
 import java.util.List;
 
-public class MainActivity extends Activity implements OnTouchListener, CvCameraViewListener2 {
-    private static final String  TAG              = "MainActivity";
+public class MainActivity extends Activity {
+    private static final String  TAG = "MainActivity"; // in this activity, I commented everything concerning the color detection out in order to transfer accurately
 
-    private boolean              mIsColorSelected = false;
+    private SectionsStatePageAdapter mSectionsStatePagerAdapter;
+    private ViewPager mViewPager;
+
+    /*private boolean              mIsColorSelected = false;
     private Mat                  mRgba;
     private Scalar               mBlobColorRgba;
     private Scalar               mBlobColorHsv;
@@ -48,13 +55,13 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private Scalar               CONTOUR_COLOR;
 
     private CameraBridgeViewBase mOpenCvCameraView;
-
+*/
     ImageButton imageButton;
     Camera camera;
     android.hardware.Camera.Parameters parameters;
     boolean isFlashOn= false; //all variables are for camera flash toggle
 
-
+/*
     private BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
@@ -71,7 +78,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 } break;
             }
         }
-    }; // this is for the color blob detection code
+    }; // this is for the color blob detection code */
 
     public MainActivity() {
         Log.i(TAG, "Instantiated new " + this.getClass());
@@ -89,46 +96,46 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "called onCreate");
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        Log.d(TAG, "onCreate: started.");
+
+        mViewPager = (ViewPager) findViewById(R.id.container);
+
+        /*requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); // color blob code
 
         setContentView(R.layout.main_activity); // color blob code
 
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.color_blob_detection_activity_surface_view);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
-        mOpenCvCameraView.setCvCameraViewListener(this); // color blob code
+        mOpenCvCameraView.setCvCameraViewListener(this); // color blob code */
 
-        imageButton=(ImageButton)findViewById(R.id.imageButton); // flash toggle button
-        if(getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)){
+        imageButton = (ImageButton) findViewById(R.id.imageBtnFlash); // flash toggle button
+        if (getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) {
 
-            camera=android.hardware.Camera.open();
-            parameters=camera.getParameters();
-            isFlashOn=false; // flash toggle button
+            camera = Camera.open();
+            parameters = camera.getParameters();
+            isFlashOn = false; // flash toggle button
 
         }
-        imageButton.setOnClickListener(new View.OnClickListener(){
+        imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) { // flash toggle button
 
                 if (isFlashOn == true) {
 
-                        imageButton.setImageResource(R.drawable.on);
-                        parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-                        camera.setParameters(parameters);
-                        camera.startPreview();
+                    imageButton.setImageResource(R.drawable.on);
+                    parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                    camera.setParameters(parameters);
+                    camera.startPreview();
 
-                }
-
-                else if (isFlashOn){
+                } else if (isFlashOn) {
 
                     imageButton.setImageResource(R.drawable.off);
                     parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
                     camera.setParameters(parameters);
                     camera.stopPreview();
 
-                }
-
-                else {
+                } else {
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                     builder.setTitle("Error...");
@@ -136,10 +143,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
+                            dialogInterface.dismiss();
                         }
                     });
-                    AlertDialog alertDialog=builder.create();
+                    AlertDialog alertDialog = builder.create();
                     alertDialog.show();
 
                 }
@@ -149,6 +156,11 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         });
 
+    }
+
+    private void setupViewPager(ViewPager viewPager) {
+        SectionStatePageAdapter adapter = new SectionStatePageAdapter(getSupportFragmentManager());
+        adapter.addFragment(new Fragment1(), "Fragment1");
     }
 
     @Override
@@ -163,6 +175,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         }
     } // flash camera toggle ends
 
+    /*
     @Override
     public void onPause()
     {
@@ -279,5 +292,5 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         Imgproc.cvtColor(pointMatHsv, pointMatRgba, Imgproc.COLOR_HSV2RGB_FULL, 4);
 
         return new Scalar(pointMatRgba.get(0, 0));
-    }
+    } */
 }
